@@ -205,3 +205,14 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Ignorar archivo principal de variables de entorno
+.env
+
+# Ignorar variantes comunes
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Ignorar cualquier archivo que empiece con .env
+.env*
