@@ -1,0 +1,48 @@
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    container_name: tailhawk_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./apps/api/.env.example
+    volumes:
+      - ./apps/api:/app
+    depends_on:
+      - mongo
+      - redis
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.dev
+    container_name: tailhawk_web
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./apps/web/.env.example
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    depends_on:
+      - api
+
+  mongo:
+    image: mongo:latest
+    container_name: tailhawk_mongo
+
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:latest
+    container_name: tailhawk_redis
+
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongo_data:
+  redis_data:
