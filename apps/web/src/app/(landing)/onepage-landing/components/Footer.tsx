@@ -1,32 +1,37 @@
 import { LuFacebook, LuLinkedin } from "react-icons/lu";
 
-type FooterProps = {
-  data?: {
-    footerText?: string;
-    socialLinks?: {
-      linkedin?: string;
-      facebook?: string;
-    };
-  };
+type SocialLinks = {
+  linkedin?: string;
+  facebook?: string;
 };
 
-const Footer = ({ data }: FooterProps) => {
+type FooterData = {
+  footerText?: string;
+  socialLinks?: SocialLinks;
+};
+
+type FooterProps = {
+  data?: FooterData;
+};
+
+export default function Footer({ data }: FooterProps): JSX.Element {
+  const footerText = data?.footerText ?? "© Borderlink";
+  const socialLinks = data?.socialLinks;
+
   return (
     <footer className="relative pt-20 pb-12 bg-default-800 dark:bg-default-900 min-h-[200px]">
       <div className="container">
-
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-
           {/* Texto */}
           <div className="text-default-400 text-sm text-center md:text-left">
-            {data?.footerText || "© Borderlink"}
+            {footerText}
           </div>
 
           {/* Redes */}
           <div className="flex gap-4">
-            {data?.socialLinks?.linkedin && (
+            {socialLinks?.linkedin && (
               <a
-                href={data.socialLinks.linkedin}
+                href={socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="size-10 btn border border-default-400/40 bg-transparent rounded-full text-default-400 hover:text-primary flex items-center justify-center"
@@ -35,9 +40,9 @@ const Footer = ({ data }: FooterProps) => {
               </a>
             )}
 
-            {data?.socialLinks?.facebook && (
+            {socialLinks?.facebook && (
               <a
-                href={data.socialLinks.facebook}
+                href={socialLinks.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="size-10 btn border border-default-400/40 bg-transparent rounded-full text-default-400 hover:text-primary flex items-center justify-center"
@@ -46,12 +51,8 @@ const Footer = ({ data }: FooterProps) => {
               </a>
             )}
           </div>
-
         </div>
-
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

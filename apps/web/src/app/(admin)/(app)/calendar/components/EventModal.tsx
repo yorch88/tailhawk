@@ -1,6 +1,6 @@
-import { Calendar, type EventApi } from '@fullcalendar/core';
-import React, { useState } from 'react';
-import { LuX } from 'react-icons/lu';
+import { Calendar, type EventApi } from "@fullcalendar/core";
+import { useState } from "react";
+import { LuX } from "react-icons/lu";
 
 type NewEventData = {
   date: Date;
@@ -14,17 +14,24 @@ type Props = {
   onClose: () => void;
 };
 
-const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose }) => {
-  const [title, setTitle] = useState(event ? event.title : '');
-  const [category, setCategory] = useState(event?.classNames?.[0] ?? '!text-primary');
+export default function EventModal({
+  event,
+  newEventData,
+  calendarObj,
+  onClose,
+}: Props): JSX.Element {
+  const [title, setTitle] = useState<string>(event?.title ?? "");
+  const [category, setCategory] = useState<string>(
+    event?.classNames?.[0] ?? "!text-primary"
+  );
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (!calendarObj) return;
 
     if (event) {
-      event.setProp('title', title);
-      event.setProp('classNames', [category]);
+      event.setProp("title", title);
+      event.setProp("classNames", [category]);
     } else if (newEventData) {
       calendarObj.addEvent({
         title,
@@ -33,10 +40,11 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
         className: category,
       });
     }
+
     onClose();
   };
 
-  const handleDelete = () => {
+  const handleDelete = (): void => {
     if (event) {
       event.remove();
     }
@@ -49,14 +57,15 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
       role="dialog"
       aria-labelledby="event-modal-label"
     >
-      <div className="w-full max-w-lg card w-full flex flex-col border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
+      <div className="w-full max-w-lg card flex flex-col border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
         <div className="card-header flex justify-between items-center p-4">
           <h3
             id="event-modal-label"
             className="font-semibold text-base text-default-800 dark:text-white"
           >
-            {event ? 'Edit Event' : 'Add Event'}
+            {event ? "Edit Event" : "Add Event"}
           </h3>
+
           <button
             type="button"
             className="text-default-800 hover:text-red-500"
@@ -70,7 +79,6 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
 
         <form
           className="needs-validation"
-          name="event-form"
           id="form-event"
           autoComplete="off"
           onSubmit={handleSubmit}
@@ -78,7 +86,10 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
           <div className="card-body p-4">
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label htmlFor="event-title" className="inline-block mb-2 text-base font-medium">
+                <label
+                  htmlFor="event-title"
+                  className="inline-block mb-2 text-base font-medium"
+                >
                   Event Name
                 </label>
                 <input
@@ -88,21 +99,27 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
                   placeholder="Event name"
                   required
                   value={title}
-                  onChange={e => setTitle(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setTitle(e.target.value)
+                  }
                 />
               </div>
 
               <div>
-                <label htmlFor="event-category" className="inline-block mb-2 text-base font-medium">
+                <label
+                  htmlFor="event-category"
+                  className="inline-block mb-2 text-base font-medium"
+                >
                   Category
                 </label>
                 <select
-                  className="form-input flex items-center w-full"
-                  name="event-category"
+                  className="form-input w-full"
                   id="event-category"
                   required
                   value={category}
-                  onChange={e => setCategory(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setCategory(e.target.value)
+                  }
                 >
                   <option value="">Select Category</option>
                   <option value="!text-primary">Primary</option>
@@ -115,7 +132,7 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
             </div>
           </div>
 
-          <div className="card-footer flex gap-2 justify-end  p-4">
+          <div className="card-footer flex gap-2 justify-end p-4">
             <button
               type="button"
               onClick={onClose}
@@ -128,21 +145,18 @@ const EventModal: React.FC<Props> = ({ event, newEventData, calendarObj, onClose
               <button
                 type="button"
                 onClick={handleDelete}
-                id="btn-delete-event"
                 className="bg-transparent text-danger btn border-0 hover:bg-red-50"
               >
                 Delete
               </button>
             )}
 
-            <button type="submit" id="btn-save-event" className="btn bg-primary text-white">
-              {event ? 'Update Event' : 'Add Event'}
+            <button type="submit" className="btn bg-primary text-white">
+              {event ? "Update Event" : "Add Event"}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
-};
-
-export default EventModal;
+}

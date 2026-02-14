@@ -1,53 +1,67 @@
-import React from 'react';
-import { LuBriefcase, LuUserCheck, LuUsers, LuUserX } from 'react-icons/lu';
+import {
+  LuBriefcase,
+  LuUserCheck,
+  LuUsers,
+  LuUserX,
+} from "react-icons/lu";
+import { IconType } from "react-icons";
+
+type ColorVariant = "info" | "danger" | "success" | "primary";
 
 type ReportCard = {
   id: number;
   title: string;
   value: number;
-  icon: React.ElementType;
-  color: 'info' | 'danger' | 'success' | 'primary';
+  icon: IconType;
+  color: ColorVariant;
 };
 
 const reports: ReportCard[] = [
   {
     id: 1,
-    title: 'Total Employee',
+    title: "Total Employee",
     value: 43,
     icon: LuUsers,
-    color: 'info',
+    color: "info",
   },
   {
     id: 2,
-    title: 'Absent Employee (Today)',
+    title: "Absent Employee (Today)",
     value: 6,
     icon: LuUserX,
-    color: 'danger',
+    color: "danger",
   },
   {
     id: 3,
-    title: 'Present Employee (Today)',
+    title: "Present Employee (Today)",
     value: 32,
     icon: LuUserCheck,
-    color: 'success',
+    color: "success",
   },
   {
     id: 4,
-    title: 'Working Days (Current Month)',
+    title: "Working Days (Current Month)",
     value: 22,
     icon: LuBriefcase,
-    color: 'primary',
+    color: "primary",
   },
 ];
 
-const EmployeeReport = () => {
+const colorClasses: Record<ColorVariant, string> = {
+  info: "text-info bg-info/10",
+  danger: "text-danger bg-danger/10",
+  success: "text-success bg-success/10",
+  primary: "text-primary bg-primary/10",
+};
+
+export default function EmployeeReport(): JSX.Element {
   return (
     <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mb-5">
       {reports.map(({ id, title, value, icon: Icon, color }) => (
         <div key={id} className="card">
           <div className="card-body">
             <div className="flex items-center gap-3">
-              <div className={`btn text-${color} bg-${color}/10 size-12`}>
+              <div className={`btn size-12 ${colorClasses[color]}`}>
                 <Icon className="size-6" />
               </div>
               <div>
@@ -62,6 +76,4 @@ const EmployeeReport = () => {
       ))}
     </div>
   );
-};
-
-export default EmployeeReport;
+}

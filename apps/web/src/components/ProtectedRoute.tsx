@@ -7,28 +7,38 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export default function ProtectedRoute({
+  children,
+}: ProtectedRouteProps): JSX.Element | null {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const checkAuth = async (): Promise<void> => {
       try {
         await getCurrentUser();
       } catch {
         localStorage.removeItem("access_token");
-        navigate("/basic-login");
+        if (isMounted) {
+          navigate("/basic-login", { replace: true });
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, [navigate]);
 
   if (loading) return null;
 
   return <>{children}</>;
-};
-
-export default ProtectedRoute;
+}

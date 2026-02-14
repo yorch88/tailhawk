@@ -1,25 +1,27 @@
-import type { ApexOptions } from 'apexcharts';
-import { useMemo } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import type { ApexOptions } from "apexcharts";
+import { useMemo } from "react";
+import ReactApexChart from "react-apexcharts";
+
+type ChartType = NonNullable<ApexOptions["chart"]>["type"];
 
 type PropsType = {
-  type?: ApexChart['type'];
+  type?: ChartType;
   height?: number | string;
   width?: number | string;
   getOptions: () => ApexOptions;
-  series: ApexOptions['series'];
+  series: ApexOptions["series"];
   className?: string;
 };
 
-const ApexChartClient = ({
+export default function ApexChartClient({
   type,
   height,
-  width = '100%',
+  width = "100%",
   getOptions,
   series,
   className,
-}: PropsType) => {
-  const options = useMemo(() => getOptions(), []);
+}: PropsType): JSX.Element {
+  const options = useMemo<ApexOptions>(() => getOptions(), [getOptions]);
 
   return (
     <ReactApexChart
@@ -31,6 +33,4 @@ const ApexChartClient = ({
       className={className}
     />
   );
-};
-
-export default ApexChartClient;
+}
