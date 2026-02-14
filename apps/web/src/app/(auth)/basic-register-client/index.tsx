@@ -3,9 +3,33 @@ import borderLogo2 from '@/assets/images/border-logo2.png';
 import PageMeta from '@/components/PageMeta';
 import { registerTenant } from './api';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL: string = import.meta.env.VITE_API_URL as string;
 
-async function solvePow(nonce: string, difficulty: number) {
+/* =========================
+   Types
+========================= */
+
+interface ChallengeResponse {
+  nonce: string;
+  difficulty: number;
+}
+
+interface FormState {
+  email: string;
+  password: string;
+  giro: string;
+  org_name: string;
+  modules: string[];
+}
+
+/* =========================
+   PoW Solver
+========================= */
+
+async function solvePow(
+  nonce: string,
+  difficulty: number
+): Promise<number> {
   let counter = 0;
 
   while (true) {
@@ -13,7 +37,7 @@ async function solvePow(nonce: string, difficulty: number) {
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray
-      .map(b => b.toString(16).padStart(2, "0"))
+      .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
 
     if (hashHex.startsWith("0".repeat(difficulty))) {
@@ -22,16 +46,18 @@ async function solvePow(nonce: string, difficulty: number) {
 
     counter++;
 
-    // Evita congelar el navegador
     if (counter % 500 === 0) {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
     }
   }
 }
 
-const Index = () => {
+/* =========================
+   Component
+========================= */
 
-  const GIROS = [
+const Index = () => {
+  const GIROS: string[] = [
     'psychology',
     'medical',
     'legal',
@@ -40,7 +66,7 @@ const Index = () => {
     'consulting',
   ];
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     email: '',
     password: '',
     giro: '',
@@ -48,40 +74,47 @@ const Index = () => {
     modules: ['MetalIA MS'],
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setMessage(null);
 
     try {
-      // 1️⃣ Pedir challenge
-      const challengeRes = await fetch(`${API_URL}/v1/security/challenge`)
+      /* 1️⃣ Obtener challenge */
+      const challengeRes = await fetch(
+        `${API_URL}/v1/security/challenge`
+      );
 
       if (!challengeRes.ok) {
         throw new Error("No se pudo obtener challenge");
       }
 
-      const challenge = await challengeRes.json();
+      const challenge: ChallengeResponse =
+        await challengeRes.json();
 
-      // 2️⃣ Resolver PoW
+      /* 2️⃣ Resolver PoW */
       const counter = await solvePow(
         challenge.nonce,
         challenge.difficulty
       );
 
-      // 3️⃣ Enviar registro con PoW
+      /* 3️⃣ Enviar registro */
       const data = await registerTenant({
         ...form,
         pow: {
@@ -94,8 +127,12 @@ const Index = () => {
         `Tenant creado. Código: ${data.client_code} | DB: ${data.db_name} | Estado: ${data.status}`
       );
 
-    } catch (err: any) {
-      setError(err.message || "Error inesperado");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Error inesperado");
+      }
     } finally {
       setLoading(false);
     }
@@ -126,10 +163,14 @@ const Index = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="text-left w-full mt-10">
-
+            <form
+              onSubmit={handleSubmit}
+              className="text-left w-full mt-10"
+            >
               <div className="mb-4">
-                <label className="block text-sm mb-2">Email Admin</label>
+                <label className="block text-sm mb-2">
+                  Email Admin
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -141,7 +182,9 @@ const Index = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm mb-2">Password</label>
+                <label className="block text-sm mb-2">
+                  Password
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -153,7 +196,9 @@ const Index = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm mb-2">Nombre Organización</label>
+                <label className="block text-sm mb-2">
+                  Nombre Organización
+                </label>
                 <input
                   type="text"
                   name="org_name"
@@ -165,15 +210,17 @@ const Index = () => {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm mb-2">Giro</label>
+                <label className="block text-sm mb-2">
+                  Giro
+                </label>
                 <select
                   name="giro"
                   value={form.giro}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setForm((prev) => ({
+                      ...prev,
                       giro: e.target.value,
-                    })
+                    }))
                   }
                   className="form-input"
                   required
@@ -192,9 +239,10 @@ const Index = () => {
                 disabled={loading}
                 className="btn bg-primary text-white w-full"
               >
-                {loading ? 'Verificando seguridad...' : 'Registrar'}
+                {loading
+                  ? 'Verificando seguridad...'
+                  : 'Registrar'}
               </button>
-
             </form>
 
             {message && (

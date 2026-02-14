@@ -4,40 +4,35 @@ const API_URL: string = import.meta.env.VITE_API_URL as string;
    Types
 ========================= */
 
-export interface LandingData {
-  title: string;
-  subtitle: string;
-  content: string;
-  // ajustalo a lo que realmente devuelve tu backend
-}
-
 export interface ContactPayload {
   name: string;
   email: string;
+  phone?: string; // 👈 ahora existe
   message: string;
+  pow: {
+    nonce: string;
+    counter: number;
+  };
 }
 
-export interface ApiErrorResponse {
-  detail?: string;
+export interface ContactResponse {
+  success: boolean;
+  message?: string;
+}
+
+interface ApiValidationError {
+  detail?: {
+    msg: string;
+  }[];
 }
 
 /* =========================
    API
 ========================= */
 
-export async function getLanding(): Promise<LandingData> {
-  const response: Response = await fetch(`${API_URL}/v1/landing`);
-
-  if (!response.ok) {
-    throw new Error("Error cargando landing");
-  }
-
-  return response.json() as Promise<LandingData>;
-}
-
 export async function sendContact(
   payload: ContactPayload
-): Promise<{ success: boolean; message: string }> {
+): Promise<ContactResponse> {
   const response: Response = await fetch(
     `${API_URL}/v1/landing/contact`,
     {
@@ -52,9 +47,12 @@ export async function sendContact(
   const data: unknown = await response.json();
 
   if (!response.ok) {
-    const errorData = data as ApiErrorResponse;
-    throw new Error(errorData?.detail || "Error enviando mensaje");
+    const errorData = data as ApiValidationError;
+    throw new Error(
+      errorData?.detail?.[0]?.msg ||
+        "Ocurrió un error al enviar tu mensaje."
+    );
   }
 
-  return data as { success: boolean; message: string };
+  return data as ContactResponse;
 }

@@ -1,28 +1,34 @@
 import { useState } from 'react';
 import borderLogo2 from '@/assets/images/border-logo2.png';
 import PageMeta from '@/components/PageMeta';
-import { registerTenant } from './api';
-
+import { approveTenant } from './api';
 
 const Index = () => {
-  const [apiKey, setApiKey] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setMessage(null);
 
     try {
-      const data = await registerTenant(apiKey);
+      const data = await approveTenant(apiKey);
+
       setMessage(
         `Tenant creado. Código: ${data.client_code} | DB: ${data.db_name}`
       );
-    } catch (err) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Error inesperado');
+      }
     } finally {
       setLoading(false);
     }
@@ -35,19 +41,12 @@ const Index = () => {
       <div className="relative min-h-screen w-full flex justify-center items-center py-16">
         <div className="card md:w-lg w-screen z-10">
           <div className="text-center px-10 py-12">
-          <div className="flex justify-center mb-1">
+
+            <div className="flex justify-center mb-1">
               <img
                 src={borderLogo2}
-                alt="logo light"
-                className="
-                  w-[220px]
-                  sm:w-[260px]
-                  
-                  max-w-full
-                  h-auto
-                  object-contain
-                  drop-shadow-lg
-                "
+                alt="logo"
+                className="w-[220px] sm:w-[260px] max-w-full h-auto object-contain drop-shadow-lg"
               />
             </div>
 

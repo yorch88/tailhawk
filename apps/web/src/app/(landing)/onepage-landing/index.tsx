@@ -7,27 +7,11 @@ import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
 
-import { getLanding } from "./api.js"; // 👈 importante
-
-type LandingType = {
-  heroTitle?: string;
-  heroSubtitle?: string;
-  aboutTitle?: string;
-  aboutDescription?: string;
-  features?: { title: string; description: string }[];
-  contactTitle?: string;
-  contactSubtitle?: string;
-  privacyText?: string;
-  footerText?: string;
-  socialLinks?: {
-    linkedin?: string;
-    facebook?: string;
-  };
-};
+import { getLanding, type LandingData } from "./api";
 
 const Index = () => {
-  const [landing, setLanding] = useState<LandingType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [landing, setLanding] = useState<LandingData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchLanding = async () => {

@@ -6,31 +6,28 @@ import { Link, useLocation } from 'react-router-dom';
 const MobileMenu = () => {
   const location = useLocation();
 
-  const handleScroll = (id) => {
-    // Cerrar overlay manualmente
+  const handleScroll = (id: string): void => {
     const overlay = document.getElementById('navbarMenu');
-    if (overlay) {
-      overlay.classList.add('hidden');
-    }
-
-    // Si NO estamos en la landing
+    overlay?.classList.add('hidden');
+  
     if (location.pathname !== "/onepage-landing") {
-      window.location.href = `/onepage-landing#${id}`;
+      window.location.assign(`/onepage-landing#${id}`);
       return;
     }
-
+  
     const element = document.getElementById(id);
     if (!element) return;
-
+  
     const offset = 80;
     const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - offset;
-
+    const offsetPosition = elementPosition + window.scrollY - offset;
+  
     window.scrollTo({
       top: offsetPosition,
       behavior: "smooth",
     });
   };
+  
 
   return (
     <>

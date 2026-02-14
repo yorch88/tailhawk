@@ -1,4 +1,5 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -14,7 +15,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const checkAuth = async (): Promise<void> => {
       try {
         await getCurrentUser();
-      } catch (err: unknown) {
+      } catch {
         localStorage.removeItem("access_token");
         navigate("/basic-login");
       } finally {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import logoDark from '@/assets/images/logo-dark.png';
+// import logoDark from '@/assets/images/logo-dark.png';
 //import logoLight from '@/assets/images/logo-light.png';
 import borderLogo2 from '@/assets/images/border-logo2.png';
 import PageMeta from '@/components/PageMeta';

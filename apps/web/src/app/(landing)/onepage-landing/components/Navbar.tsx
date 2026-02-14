@@ -5,18 +5,22 @@ const Navbar = () => {
   const location = useLocation();
 
   // 🔥 Animación personalizada con duración controlada
-  const smoothScrollTo = (targetY, duration = 800) => {
-    const startY = window.pageYOffset;
-    const distance = targetY - startY;
-    let startTime = null;
+  const smoothScrollTo = (
+    targetY: number,
+    duration: number = 800
+  ): void => {
+    const startY: number = window.scrollY;
+    const distance: number = targetY - startY;
+    let startTime: number | null = null;
 
-    const animation = (currentTime) => {
-      if (!startTime) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
+    const animation = (currentTime: number): void => {
+      if (startTime === null) startTime = currentTime;
+
+      const timeElapsed: number = currentTime - startTime;
+      const progress: number = Math.min(timeElapsed / duration, 1);
 
       // easing elegante (easeInOutCubic)
-      const ease =
+      const ease: number =
         progress < 0.5
           ? 4 * progress * progress * progress
           : 1 - Math.pow(-2 * progress + 2, 3) / 2;
@@ -31,25 +35,28 @@ const Navbar = () => {
     requestAnimationFrame(animation);
   };
 
-  const handleScroll = (id) => {
+  const handleScroll = (id: string): void => {
     if (location.pathname !== "/onepage-landing") {
-      window.location.href = "/onepage-landing";
+      window.location.assign("/onepage-landing");
       return;
     }
-  
-    const offset = 80;
-  
+
+    const offset: number = 80;
+
     if (id === "top") {
       smoothScrollTo(0, 800);
       return;
     }
-  
+
     const element = document.getElementById(id);
     if (!element) return;
-  
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - offset;
-  
+
+    const elementPosition: number =
+      element.getBoundingClientRect().top;
+
+    const offsetPosition: number =
+      elementPosition + window.scrollY - offset;
+
     smoothScrollTo(offsetPosition, 800);
   };
 
